@@ -54,6 +54,13 @@ class ChunkProcessor:
         # set hidden params from chunk to model_response
         if model_response is not None and hasattr(model_response, "_hidden_params"):
             model_response._hidden_params = chunk.get("_hidden_params", {})
+
+            usage = chunk.get("usage")
+            if usage is not None:
+                cost = getattr(usage, "cost", None) if hasattr(usage, "cost") else usage.get("cost")
+                if cost is not None:
+                    model_response._hidden_params["response_cost"] = cost
+
         return model_response
 
     @staticmethod
